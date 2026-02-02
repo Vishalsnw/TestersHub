@@ -10,23 +10,56 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.testershub.app.databinding.ActivityRequestDetailBinding
 import com.testershub.app.models.TestingRequest
 
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.testershub.app.adapters.SupporterAdapter
+import com.testershub.app.models.Supporter
+
 class RequestDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRequestDetailBinding
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
     private var requestId: String? = null
+    private val supporterList = mutableListOf<Supporter>()
+    private lateinit var supporterAdapter: SupporterAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRequestDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setupSupportersRecyclerView()
+
         requestId = intent.getStringExtra("REQUEST_ID")
-        requestId?.let { loadRequestDetails(it) }
+        requestId?.let { 
+            loadRequestDetails(it)
+            loadSupporters(it)
+        }
 
         binding.btnJoin.setOnClickListener {
             joinTesting()
         }
+    }
+
+    private fun setupSupportersRecyclerView() {
+        supporterAdapter = SupporterAdapter(supporterList)
+        binding.rvSupporters.layoutManager = LinearLayoutManager(this)
+        binding.rvSupporters.adapter = supporterAdapter
+    }
+
+    private fun loadSupporters(id: String) {
+        db.collection("testingRequests").document(id)
+            .collection("supporters")
+            .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshot, _ ->
+                if (snapshot != null) {
+                    supporterList.clear()
+                    for (doc in snapshot.documents) {
+                        val supporter = doc.toObject(Supporter::class.java)
+                        if (supporter != null) supporterList.add(supporter)
+                    }
+                    supporterAdapter.notifyDataSetChanged()
+                }
+            }
     }
 
     private fun loadRequestDetails(id: String) {
@@ -83,6 +116,24 @@ class RequestDetailActivity : AppCompatActivity() {
 
         batch.commit().addOnSuccessListener {
             Toast.makeText(this, "Joined successfully!", Toast.LENGTH_SHORT).show()
+            createNotification(rId, userId)
+        }
+    }
+
+    private fun createNotification(rId: String, testerId: String) {
+        db.collection("testingRequests").document(rId).get().addOnSuccessListener { snapshot ->
+            val ownerId = snapshot.getString("createdBy") ?: return@addOnSuccessListener
+            val appName = snapshot.getString("appName") ?: "your app"
+            
+            val notification = hashMapOf(
+                "message" to "Someone joined testing for $appName",
+                "requestId" to rId,
+                "timestamp" to FieldValue.serverTimestamp(),
+                "read" to false
+            )
+            
+            db.collection("notifications").document(ownerId)
+                .collection("items").add(notification)
         }
     }
 }
