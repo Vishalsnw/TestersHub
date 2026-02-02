@@ -51,8 +51,20 @@ class CreateRequestActivity : AppCompatActivity() {
         val instructions = binding.etInstructions.text.toString()
         val testersRequired = binding.etTestersRequired.text.toString().toIntOrNull() ?: 0
 
-        if (appName.isEmpty() || packageName.isEmpty() || testingLink.isEmpty() || testersRequired <= 0 || selectedDeadline == null) {
-            Toast.makeText(this, "Please fill all fields and select a deadline", Toast.LENGTH_SHORT).show()
+        if (appName.isEmpty()) {
+            binding.etAppName.error = "App Name is required"
+            return
+        }
+        if (packageName.isEmpty() || !packageName.contains(".")) {
+            binding.etPackageName.error = "Valid Package Name is required"
+            return
+        }
+        if (testersRequired <= 0 || testersRequired > 100) {
+            binding.etTestersRequired.error = "Enter a number between 1 and 100"
+            return
+        }
+        if (selectedDeadline == null) {
+            Toast.makeText(this, "Please select a deadline", Toast.LENGTH_SHORT).show()
             return
         }
 
