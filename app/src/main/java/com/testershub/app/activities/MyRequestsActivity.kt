@@ -1,6 +1,5 @@
 package com.testershub.app.activities
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -8,13 +7,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.testershub.app.R
 import com.testershub.app.adapters.RequestAdapter
-import com.testershub.app.databinding.ActivityMainBinding
+import com.testershub.app.databinding.ActivityMyRequestsBinding
 import com.testershub.app.models.TestingRequest
 
-class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
+class MyRequestsActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMyRequestsBinding
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
     private lateinit var adapter: RequestAdapter
@@ -22,34 +20,25 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
-        if (auth.currentUser == null) {
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
-            return
-        }
-
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityMyRequestsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        
+
         setupRecyclerView()
-        setupBottomNavigation()
-        listenForRequests()
+        loadMyRequests()
     }
 
     private fun setupRecyclerView() {
         adapter = RequestAdapter(requestList) { request ->
-            val intent = Intent(this, RequestDetailActivity::class.java)
-            intent.putExtra("REQUEST_ID", request.requestId)
-            startActivity(intent)
+            // Handle click
         }
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
     }
 
-    private fun listenForRequests() {
+    private fun loadMyRequests() {
+        val userId = auth.currentUser?.uid ?: return
         db.collection("testingRequests")
-            .whereEqualTo("status", "IN_PROGRESS")
+            .whereEqualTo("createdBy", userId)
             .orderBy("createdAt", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, e ->
                 if (snapshot != null) {
@@ -61,26 +50,5 @@ class MainActivity : AppCompatActivity() {
                     adapter.notifyDataSetChanged()
                 }
             }
-    }
-
-    private fun setupBottomNavigation() {
-        binding.bottomNavigation.setOnItemSelectedListener { item ->
-            when(item.itemId) {
-                R.id.nav_home -> true
-                R.id.nav_create -> {
-                    startActivity(Intent(this, CreateRequestActivity::class.java))
-                    true
-                }
-                R.id.nav_my_requests -> {
-                    startActivity(Intent(this, MyRequestsActivity::class.java))
-                    true
-                }
-                R.id.nav_profile -> {
-                    startActivity(Intent(this, ProfileActivity::class.java))
-                    true
-                }
-                else -> false
-            }
-        }
     }
 }
