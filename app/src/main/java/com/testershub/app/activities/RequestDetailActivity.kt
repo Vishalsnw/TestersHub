@@ -1,7 +1,6 @@
 package com.testershub.app.activities
 
 import android.os.Bundle
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -9,10 +8,11 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.testershub.app.databinding.ActivityRequestDetailBinding
 import com.testershub.app.models.TestingRequest
-
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.testershub.app.adapters.SupporterAdapter
 import com.testershub.app.models.Supporter
+import android.content.Intent
+import android.net.Uri
 
 class RequestDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRequestDetailBinding
@@ -46,6 +46,16 @@ class RequestDetailActivity : AppCompatActivity() {
         binding.rvSupporters.adapter = supporterAdapter
     }
 
+    private fun loadRequestDetails(id: String) {
+        db.collection("testingRequests").document(id)
+            .addSnapshotListener { snapshot, e ->
+                if (snapshot != null && snapshot.exists()) {
+                    val request = snapshot.toObject(TestingRequest::class.java)
+                    request?.let { updateUI(it) }
+                }
+            }
+    }
+
     private fun loadSupporters(id: String) {
         db.collection("testingRequests").document(id)
             .collection("supporters")
@@ -62,16 +72,6 @@ class RequestDetailActivity : AppCompatActivity() {
             }
     }
 
-    private fun loadRequestDetails(id: String) {
-        db.collection("testingRequests").document(id)
-            .addSnapshotListener { snapshot, e ->
-                if (snapshot != null && snapshot.exists()) {
-                    val request = snapshot.toObject(TestingRequest::class.java)
-                    request?.let { updateUI(it) }
-                }
-            }
-    }
-
     private fun updateUI(request: TestingRequest) {
         binding.tvAppName.text = request.appName
         binding.tvPackageName.text = request.packageName
@@ -79,6 +79,11 @@ class RequestDetailActivity : AppCompatActivity() {
         binding.progressBar.max = request.testersRequired
         binding.progressBar.progress = request.joinedCount
         binding.tvProgressText.text = "${request.joinedCount} / ${request.testersRequired} testers"
+
+        binding.tvPackageName.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(request.testingLink))
+            startActivity(intent)
+        }
 
         checkIfJoined(request.requestId)
     }
@@ -90,8 +95,8 @@ class RequestDetailActivity : AppCompatActivity() {
             .get()
             .addOnSuccessListener { doc ->
                 if (doc.exists()) {
-                    binding.btnJoin.visibility = View.GONE
-                    binding.tvJoinedStatus.visibility = View.VISIBLE
+                    binding.btnJoin.visibility = android.view.View.GONE
+                    binding.tvJoinedStatus.visibility = android.view.View.VISIBLE
                 }
             }
     }
@@ -116,11 +121,11 @@ class RequestDetailActivity : AppCompatActivity() {
 
         batch.commit().addOnSuccessListener {
             Toast.makeText(this, "Joined successfully!", Toast.LENGTH_SHORT).show()
-            createNotification(rId, userId)
+            createNotification(rId)
         }
     }
 
-    private fun createNotification(rId: String, testerId: String) {
+    private fun createNotification(rId: String) {
         db.collection("testingRequests").document(rId).get().addOnSuccessListener { snapshot ->
             val ownerId = snapshot.getString("createdBy") ?: return@addOnSuccessListener
             val appName = snapshot.getString("appName") ?: "your app"

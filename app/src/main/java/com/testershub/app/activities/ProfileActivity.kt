@@ -1,5 +1,6 @@
 package com.testershub.app.activities
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -18,10 +19,17 @@ class ProfileActivity : AppCompatActivity() {
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        binding.toolbar.setNavigationOnClickListener { finish() }
+
         loadUserProfile()
         
         binding.btnLogout.setOnClickListener {
             auth.signOut()
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
             finish()
         }
     }
@@ -40,8 +48,8 @@ class ProfileActivity : AppCompatActivity() {
     private fun updateUI(user: User) {
         binding.tvName.text = user.name
         binding.tvEmail.text = user.email
-        binding.tvHelpedCount.text = "Helped: ${user.helpedCount}"
-        binding.tvRequestedCount.text = "Requested: ${user.requestedCount}"
+        binding.tvHelpedValue.text = user.helpedCount.toString()
+        binding.tvRequestedValue.text = user.requestedCount.toString()
         
         Glide.with(this)
             .load(user.profilePhoto)

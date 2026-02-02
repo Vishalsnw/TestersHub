@@ -12,6 +12,7 @@
         <item name="android:navigationBarColor">@color/surface</item>
         <item name="android:statusBarColor">@color/surface</item>
         <item name="android:windowLightStatusBar">true</item>
+        <item name="materialCardViewStyle">@style/Widget.TestersHub.Card</item>
     </style>
 
     <style name="Widget.TestersHub.Card" parent="Widget.Material3.CardView.Elevated">

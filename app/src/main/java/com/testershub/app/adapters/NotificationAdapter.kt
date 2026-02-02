@@ -24,11 +24,16 @@ class NotificationAdapter(private val notifications: List<Notification>) :
         
         val date = notification.timestamp?.toDate()
         if (date != null) {
-            val sdf = SimpleDateFormat("dd MMM, HH:mm", Locale.getDefault())
+            val sdf = SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault())
             holder.binding.tvTime.text = sdf.format(date)
         }
         
-        holder.binding.root.alpha = if (notification.read) 0.6f else 1.0f
+        holder.binding.cardView.setCardBackgroundColor(
+            if (notification.read) 
+                holder.itemView.context.getColor(android.R.color.transparent)
+            else 
+                holder.itemView.context.getColor(com.testershub.app.R.color.primaryContainer)
+        )
     }
 
     override fun getItemCount() = notifications.size
