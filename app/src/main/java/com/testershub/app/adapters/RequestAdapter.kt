@@ -16,6 +16,16 @@ class RequestAdapter(private val requests: List<TestingRequest>, private val onI
         return ViewHolder(binding)
     }
 
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val request = requests[position]
+        holder.binding.tvAppName.text = request.appName
+        holder.binding.tvProgress.text = "${request.joinedCount} of ${request.testersRequired} testers joined"
+        
+        holder.binding.progressBar.max = request.testersRequired
+        holder.binding.progressBar.setProgress(request.joinedCount, true)
+        
+        holder.binding.root.setOnClickListener { onItemClick(request) }
+    }
 
     override fun getItemCount() = requests.size
 }
