@@ -26,6 +26,7 @@
         <activity android:name=".activities.RequestDetailActivity" />
         <activity android:name=".activities.ProfileActivity" />
         <activity android:name=".activities.MyRequestsActivity" />
+        <activity android:name=".activities.NotificationsActivity" />
         
     </application>
 

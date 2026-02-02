@@ -10,6 +10,9 @@
         android:id="@+id/nav_my_requests"
         android:title="My Requests" />
     <item
+        android:id="@+id/nav_notifications"
+        android:title="Alerts" />
+    <item
         android:id="@+id/nav_profile"
         android:title="Profile" />
 </menu>
