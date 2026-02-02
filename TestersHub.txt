@@ -1,0 +1,118 @@
+Create a complete Android mobile application using Kotlin named TestersHub.
+This app helps Android developers exchange Google Play closed testing support.
+The project must be a native Android app, not a web app.
+Use:
+Kotlin
+XML layouts
+Firebase Authentication
+Firebase Firestore (real-time updates)
+The UI must be clean, modern, and mobile-first.
+
+Authentication
+Implement Google Sign-In using Firebase Authentication.
+After login, store user profile in Firestore collection:
+users/{userId}
+name
+email
+profilePhoto
+helpedCount = 0
+requestedCount = 0
+
+Main Screen — Public Testing Requests Feed
+Create MainActivity that shows a RecyclerView list of testing requests where:
+status == "IN_PROGRESS"
+Each card must show:
+App Name
+joinedCount / testersRequired
+Deadline
+Button: Join Testing
+Button: View Details
+Use Firestore addSnapshotListener for real-time updates.
+
+Create Testing Request Screen
+Create CreateRequestActivity with form fields:
+App Name (EditText)
+Package Name
+Testing Link
+Testers Required (number input)
+Deadline (Date Picker)
+Instructions (multiline)
+On submit: Create Firestore document in:
+testingRequests/{requestId}
+Fields:
+appName
+packageName
+testingLink
+testersRequired
+joinedCount = 0
+deadline (timestamp)
+instructions
+createdBy (currentUserId)
+status = "IN_PROGRESS"
+createdAt (timestamp)
+Also increase user's requestedCount by 1.
+
+Request Detail Screen
+Create RequestDetailActivity.
+Show:
+App Name
+Package Name
+Testing Link (clickable)
+Instructions
+Progress Bar (joinedCount / testersRequired)
+RecyclerView list of supporters
+Join Button (hidden if already joined)
+Listen to Firestore document in real-time for progress updates.
+
+Join Testing Logic
+When user presses Join Testing:
+Check if document exists: testingRequests/{requestId}/supporters/{userId}
+If not exists:
+Add supporter document with timestamp
+Increase joinedCount using FieldValue.increment(1)
+Increase current user’s helpedCount by 1
+If joinedCount >= testersRequired: Update status = "COMPLETED"
+
+My Requests Screen
+Create screen showing:
+Requests created by user
+Requests user has joined
+👤 Profile Screen
+Show:
+Profile photo
+Name
+Helped count
+Requested count
+Logout button
+
+Notifications (Basic)
+When someone joins a user's request: Store a notification document:
+notifications/{userId}/items/{notificationId}
+message
+requestId
+timestamp
+read = false
+
+Firestore Structure Summary
+users/{userId}
+testingRequests/{requestId}
+testingRequests/{requestId}/supporters/{userId}
+notifications/{userId}/items/{notificationId}
+
+UI Requirements
+Use Material Design
+Use RecyclerView for lists
+Use ProgressBar for tester progress
+Use CardView for request items
+Bottom Navigation with:
+Home
+Create
+My Requests
+Profile
+
+Additional Requirements
+Prevent duplicate joins
+Real-time UI updates
+Clean architecture with Activities and Adapters separated
+Comment the code properly
+Generate full Android Studio project structure with activities, XML layouts, adapters, data models, and Firebase integration code.
