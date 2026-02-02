@@ -15,15 +15,15 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Build Instructions"
+args = "Project Ready"
 
 [[workflows.workflow]]
-name = "Build Instructions"
+name = "Project Ready"
 author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "echo \"This is a native Android project structure. To build, open the root directory in Android Studio.\" && sleep infinity"
+args = "echo \"TestersHub Android project is ready! Open the root directory in Android Studio to build and run.\" && sleep infinity"
 
 [workflows.workflow.metadata]
 outputType = "console"
