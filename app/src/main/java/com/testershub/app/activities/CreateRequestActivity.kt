@@ -40,6 +40,7 @@ class CreateRequestActivity : AppCompatActivity() {
             calendar.set(year, month, dayOfMonth)
             selectedDeadline = calendar.time
             binding.btnSelectDeadline.text = "Deadline: $dayOfMonth/${month + 1}/$year"
+            Unit
         }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH))
         datePickerDialog.show()
     }

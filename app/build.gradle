@@ -10,6 +10,12 @@ android {
         dataBinding true
         viewBinding true
     }
+    dataBinding {
+        enabled = true
+    }
+    viewBinding {
+        enabled = true
+    }
     defaultConfig {
         applicationId "com.testershub.app"
         minSdk 24

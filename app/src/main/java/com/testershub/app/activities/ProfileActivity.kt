@@ -51,9 +51,11 @@ class ProfileActivity : AppCompatActivity() {
         binding.tvHelpedValue.text = user.helpedCount.toString()
         binding.tvRequestedValue.text = user.requestedCount.toString()
         
-        Glide.with(this)
-            .load(user.profilePhoto)
-            .circleCrop()
-            .into(binding.ivProfilePhoto)
+        user.profilePhoto?.let {
+            Glide.with(this)
+                .load(it)
+                .circleCrop()
+                .into(binding.ivProfilePhoto)
+        }
     }
 }
