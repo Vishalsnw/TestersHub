@@ -10,6 +10,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
+import com.testershub.app.R
 import com.testershub.app.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
