@@ -93,6 +93,9 @@ class CreateRequestActivity : AppCompatActivity() {
         batch.commit().addOnSuccessListener {
             Toast.makeText(this, "Request created successfully!", Toast.LENGTH_SHORT).show()
             finish()
+        }.addOnFailureListener { e ->
+            Toast.makeText(this, "Failed to create request: ${e.message}", Toast.LENGTH_LONG).show()
+            binding.btnSubmit.isEnabled = true
         }
     }
 }

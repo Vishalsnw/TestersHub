@@ -62,6 +62,9 @@ class LoginActivity : AppCompatActivity() {
             .addOnSuccessListener { result ->
                 saveUserToFirestore(result.user!!)
             }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Firebase Auth Failed: ${e.message}", Toast.LENGTH_LONG).show()
+            }
     }
 
     private fun saveUserToFirestore(firebaseUser: com.google.firebase.auth.FirebaseUser) {
@@ -76,10 +79,21 @@ class LoginActivity : AppCompatActivity() {
                     "helpedCount" to 0,
                     "requestedCount" to 0
                 )
-                userRef.set(user).addOnSuccessListener { startMainActivity() }
+                userRef.set(user)
+                    .addOnSuccessListener { 
+                        Toast.makeText(this, "Welcome to TestersHub!", Toast.LENGTH_SHORT).show()
+                        startMainActivity() 
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(this, "Failed to save user: ${e.message}", Toast.LENGTH_LONG).show()
+                        startMainActivity() // Still go to main activity even if DB save fails
+                    }
             } else {
                 startMainActivity()
             }
+        }.addOnFailureListener { e ->
+            Toast.makeText(this, "Database Error: ${e.message}", Toast.LENGTH_LONG).show()
+            startMainActivity()
         }
     }
 
