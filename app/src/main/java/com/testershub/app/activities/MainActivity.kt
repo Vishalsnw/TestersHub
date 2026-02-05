@@ -55,14 +55,21 @@ class MainActivity : AppCompatActivity() {
 
     private fun listenForRequests() {
         db.collection("testingRequests")
-            .whereEqualTo("status", "IN_PROGRESS")
             .orderBy("createdAt", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, e ->
+                if (e != null) {
+                    Toast.makeText(this, "Database Error: ${e.message}", Toast.LENGTH_LONG).show()
+                    return@addSnapshotListener
+                }
                 if (snapshot != null) {
                     requestList.clear()
                     for (doc in snapshot.documents) {
-                        val request = doc.toObject(TestingRequest::class.java)
-                        if (request != null) requestList.add(request)
+                        try {
+                            val request = doc.toObject(TestingRequest::class.java)
+                            if (request != null) requestList.add(request)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     }
                     adapter.notifyDataSetChanged()
                 }
