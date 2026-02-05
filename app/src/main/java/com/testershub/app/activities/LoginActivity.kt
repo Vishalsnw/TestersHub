@@ -51,7 +51,11 @@ class LoginActivity : AppCompatActivity() {
                 firebaseAuthWithGoogle(account.idToken!!)
             } catch (e: ApiException) {
                 e.printStackTrace()
-                Toast.makeText(this, "Sign in failed: ${e.statusCode}", Toast.LENGTH_LONG).show()
+                val message = when(e.statusCode) {
+                    10 -> "Sign in failed (Error 10): This usually means your SHA-1 fingerprint is not added in Firebase Console or doesn't match this build."
+                    else -> "Sign in failed: ${e.statusCode}"
+                }
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show()
             }
         }
     }
