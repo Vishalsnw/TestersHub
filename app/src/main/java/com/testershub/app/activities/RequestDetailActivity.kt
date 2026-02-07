@@ -123,11 +123,16 @@ class RequestDetailActivity : AppCompatActivity() {
             val supporterRef = requestRef.collection("supporters").document(userId)
             val userRef = db.collection("users").document(userId)
 
-            val snapshot = transaction.get(supporterRef)
-            if (snapshot.exists()) {
+            // 1. ALL READS FIRST
+            val requestSnapshot = transaction.get(requestRef) // Read parent document
+            val supporterSnapshot = transaction.get(supporterRef) // Check if supporter exists
+            val userSnapshot = transaction.get(userRef) // Check if user document exists
+
+            if (supporterSnapshot.exists()) {
                 throw Exception("Already joined")
             }
 
+            // 2. ALL WRITES AFTER ALL READS
             val supporter = hashMapOf(
                 "userId" to userId,
                 "joinedAt" to FieldValue.serverTimestamp(),
@@ -137,8 +142,6 @@ class RequestDetailActivity : AppCompatActivity() {
             transaction.set(supporterRef, supporter)
             transaction.update(requestRef, "joinedCount", FieldValue.increment(1))
             
-            // Check if user document exists before updating
-            val userSnapshot = transaction.get(userRef)
             if (userSnapshot.exists()) {
                 transaction.update(userRef, "helpedCount", FieldValue.increment(1))
             } else {
