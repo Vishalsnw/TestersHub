@@ -5,6 +5,7 @@ plugins {
 }
 
 android {
+    namespace 'com.testershub.app'
     compileSdk 33
     buildFeatures {
         dataBinding true
