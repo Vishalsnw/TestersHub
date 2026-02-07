@@ -21,6 +21,8 @@ class RequestAdapter(private val requests: List<TestingRequest>, private val onI
         holder.binding.tvAppName.text = request.appName
         holder.binding.tvTestersCount.text = "${request.joinedCount} of ${request.testersRequired} testers joined"
         
+        holder.binding.btnJoinTesting.setOnClickListener { /* TODO */ }
+        holder.binding.btnViewDetails.setOnClickListener { onItemClick(request) }
         holder.binding.root.setOnClickListener { onItemClick(request) }
     }
 
