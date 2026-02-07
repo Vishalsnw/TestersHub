@@ -32,15 +32,15 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         
-        setupRecyclerView()
-        setupBottomNavigation()
-        listenForRequests()
-        
-        // Enable Firestore offline persistence
+        // Initialize Firestore with settings before use
         val settings = com.google.firebase.firestore.FirebaseFirestoreSettings.Builder()
             .setPersistenceEnabled(true)
             .build()
         db.firestoreSettings = settings
+
+        setupRecyclerView()
+        setupBottomNavigation()
+        listenForRequests()
     }
 
     private fun setupRecyclerView() {
