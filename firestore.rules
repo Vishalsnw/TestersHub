@@ -20,6 +20,11 @@ service cloud.firestore {
     // Notifications collection rules
     match /notifications/{userId} {
       allow read, write: if isSignedIn() && isOwner(userId);
+      
+      match /items/{itemId} {
+        allow read: if isSignedIn() && isOwner(userId);
+        allow create: if isSignedIn();
+      }
     }
 
     // Testing Requests collection rules

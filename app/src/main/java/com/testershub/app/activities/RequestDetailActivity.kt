@@ -136,7 +136,19 @@ class RequestDetailActivity : AppCompatActivity() {
 
             transaction.set(supporterRef, supporter)
             transaction.update(requestRef, "joinedCount", FieldValue.increment(1))
-            transaction.update(userRef, "helpedCount", FieldValue.increment(1))
+            
+            // Check if user document exists before updating
+            val userSnapshot = transaction.get(userRef)
+            if (userSnapshot.exists()) {
+                transaction.update(userRef, "helpedCount", FieldValue.increment(1))
+            } else {
+                val newUser = hashMapOf(
+                    "userId" to userId,
+                    "helpedCount" to 1,
+                    "requestedCount" to 0
+                )
+                transaction.set(userRef, newUser)
+            }
         }.addOnSuccessListener {
             Toast.makeText(this, "Joined successfully! Please download and keep the app for 14 days.", Toast.LENGTH_LONG).show()
             createNotification(rId)
