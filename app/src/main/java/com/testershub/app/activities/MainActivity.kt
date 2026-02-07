@@ -55,25 +55,28 @@ class MainActivity : AppCompatActivity() {
 
     private fun listenForRequests() {
         db.collection("testingRequests")
+            .whereEqualTo("status", "IN_PROGRESS")
             .orderBy("createdAt", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
-                    // Log error but don't show toast for every snapshot error if it's just a transient offline state
                     e.printStackTrace()
-                    if (e.code != com.google.firebase.firestore.FirebaseFirestoreException.Code.UNAVAILABLE) {
+                    // Handle permission errors gracefully
+                    if (e.code == com.google.firebase.firestore.FirebaseFirestoreException.Code.PERMISSION_DENIED) {
+                        Toast.makeText(this, "Permission Denied: Please ensure you are logged in correctly.", Toast.LENGTH_LONG).show()
+                    } else if (e.code != com.google.firebase.firestore.FirebaseFirestoreException.Code.UNAVAILABLE) {
                         Toast.makeText(this, "Database Error: ${e.message}", Toast.LENGTH_LONG).show()
                     }
                     return@addSnapshotListener
                 }
                 if (snapshot != null) {
-                    // Check if data is from cache or server
-                    val source = if (snapshot.metadata.isFromCache) "local cache" else "server"
-                    
                     requestList.clear()
                     for (doc in snapshot.documents) {
                         try {
                             val request = doc.toObject(TestingRequest::class.java)
-                            if (request != null && request.createdBy != auth.currentUser?.uid) requestList.add(request)
+                            // Filter out user's own requests if needed, but keeping logic consistent with security rules
+                            if (request != null && request.createdBy != auth.currentUser?.uid) {
+                                requestList.add(request)
+                            }
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
