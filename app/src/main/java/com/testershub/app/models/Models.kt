@@ -27,7 +27,8 @@ data class TestingRequest(
 
 data class Supporter(
     val userId: String = "",
-    val timestamp: Timestamp? = null
+    val timestamp: Timestamp? = null,
+    val verified: Boolean = false
 )
 
 data class Notification(

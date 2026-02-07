@@ -92,11 +92,21 @@ class RequestDetailActivity : AppCompatActivity() {
         val userId = auth.currentUser?.uid ?: return
         db.collection("testingRequests").document(id)
             .collection("supporters").document(userId)
-            .get()
-            .addOnSuccessListener { doc ->
-                if (doc.exists()) {
+            .addSnapshotListener { doc, _ ->
+                if (doc != null && doc.exists()) {
+                    val isVerified = doc.getBoolean("verified") ?: false
                     binding.btnJoin.visibility = android.view.View.GONE
+                    if (isVerified) {
+                        binding.tvJoinedStatus.text = "Verified Tester ✓"
+                        binding.tvJoinedStatus.setTextColor(android.graphics.Color.GREEN)
+                    } else {
+                        binding.tvJoinedStatus.text = "Joined (Pending Verification)"
+                        binding.tvJoinedStatus.setTextColor(android.graphics.Color.GRAY)
+                    }
                     binding.tvJoinedStatus.visibility = android.view.View.VISIBLE
+                } else {
+                    binding.btnJoin.visibility = android.view.View.VISIBLE
+                    binding.tvJoinedStatus.visibility = android.view.View.GONE
                 }
             }
     }
@@ -105,23 +115,38 @@ class RequestDetailActivity : AppCompatActivity() {
         val userId = auth.currentUser?.uid ?: return
         val rId = requestId ?: return
 
-        val supporter = hashMapOf(
-            "userId" to userId,
-            "timestamp" to FieldValue.serverTimestamp()
-        )
+        // Disable button immediately to prevent double clicks
+        binding.btnJoin.isEnabled = false
 
-        val batch = db.batch()
-        val requestRef = db.collection("testingRequests").document(rId)
-        val supporterRef = requestRef.collection("supporters").document(userId)
-        val userRef = db.collection("users").document(userId)
+        db.runTransaction { transaction ->
+            val requestRef = db.collection("testingRequests").document(rId)
+            val supporterRef = requestRef.collection("supporters").document(userId)
+            val userRef = db.collection("users").document(userId)
 
-        batch.set(supporterRef, supporter)
-        batch.update(requestRef, "joinedCount", FieldValue.increment(1))
-        batch.update(userRef, "helpedCount", FieldValue.increment(1))
+            val snapshot = transaction.get(supporterRef)
+            if (snapshot.exists()) {
+                throw Exception("Already joined")
+            }
 
-        batch.commit().addOnSuccessListener {
-            Toast.makeText(this, "Joined successfully!", Toast.LENGTH_SHORT).show()
+            val supporter = hashMapOf(
+                "userId" to userId,
+                "timestamp" to FieldValue.serverTimestamp(),
+                "verified" to false
+            )
+
+            transaction.set(supporterRef, supporter)
+            transaction.update(requestRef, "joinedCount", FieldValue.increment(1))
+            transaction.update(userRef, "helpedCount", FieldValue.increment(1))
+        }.addOnSuccessListener {
+            Toast.makeText(this, "Joined successfully! Please download and keep the app for 14 days.", Toast.LENGTH_LONG).show()
             createNotification(rId)
+        }.addOnFailureListener { e ->
+            binding.btnJoin.isEnabled = true
+            if (e.message == "Already joined") {
+                Toast.makeText(this, "You have already joined this testing.", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
