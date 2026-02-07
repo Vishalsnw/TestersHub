@@ -21,6 +21,17 @@ class ProfileActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnBack.setOnClickListener { finish() }
+        binding.optHelped.title.text = "Apps I Helped"
+        binding.optHelped.icon.setImageResource(R.drawable.ic_home)
+        
+        binding.optRequests.title.text = "My Testing Requests"
+        binding.optRequests.icon.setImageResource(R.drawable.ic_list)
+
+        binding.optMyProfile.title.text = "Account Settings"
+        binding.optMyProfile.icon.setImageResource(R.drawable.ic_person)
+
+        binding.optNotifications.title.text = "Notifications"
+        binding.optNotifications.icon.setImageResource(R.drawable.ic_notifications)
 
         loadUserProfile()
         

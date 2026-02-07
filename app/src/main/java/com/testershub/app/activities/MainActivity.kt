@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
                     for (doc in snapshot.documents) {
                         try {
                             val request = doc.toObject(TestingRequest::class.java)
-                            if (request != null) requestList.add(request)
+                            if (request != null && request.userId != auth.currentUser?.uid) requestList.add(request)
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
