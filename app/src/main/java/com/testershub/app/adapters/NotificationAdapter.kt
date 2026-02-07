@@ -32,7 +32,7 @@ class NotificationAdapter(private val notifications: List<Notification>) :
             if (notification.read) 
                 holder.itemView.context.getColor(android.R.color.transparent)
             else 
-                holder.itemView.context.getColor(com.testershub.app.R.color.primaryContainer)
+                holder.itemView.context.getColor(com.google.android.material.R.color.material_dynamic_primary90)
         )
     }
 

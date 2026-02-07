@@ -19,9 +19,7 @@ class ProfileActivity : AppCompatActivity() {
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        binding.toolbar.setNavigationOnClickListener { finish() }
+        binding.btnBack.setOnClickListener { finish() }
 
         loadUserProfile()
         
@@ -48,8 +46,6 @@ class ProfileActivity : AppCompatActivity() {
     private fun updateUI(user: User) {
         binding.tvName.text = user.name
         binding.tvEmail.text = user.email
-        binding.tvHelpedValue.text = user.helpedCount.toString()
-        binding.tvRequestedValue.text = user.requestedCount.toString()
         
         user.profilePhoto?.let {
             Glide.with(this)
