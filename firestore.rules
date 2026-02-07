@@ -29,14 +29,19 @@ service cloud.firestore {
 
     // Testing Requests collection rules
     match /testingRequests/{requestId} {
-      // Any authenticated user can read IN_PROGRESS requests
-      allow read: if isSignedIn() && resource.data.status == "IN_PROGRESS";
+      // Allow read for authenticated users
+      allow read: if isSignedIn();
       
       // Authenticated users can create requests
       allow create: if isSignedIn();
       
-      // Only the creator can update or delete their request
-      allow update, delete: if isSignedIn() && isOwner(resource.data.createdBy);
+      // Allow update for joinedCount increment
+      allow update: if isSignedIn() && (
+        isOwner(resource.data.createdBy) || 
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['joinedCount']))
+      );
+
+      allow delete: if isSignedIn() && isOwner(resource.data.createdBy);
 
       // Supporters subcollection rules
       match /supporters/{userId} {
