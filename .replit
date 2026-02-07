@@ -21,9 +21,9 @@ args = "Project Ready"
 name = "Project Ready"
 author = "agent"
 
+[workflows.workflow.metadata]
+outputType = "console"
+
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "echo \"TestersHub Android project is ready! Open the root directory in Android Studio to build and run.\" && sleep infinity"
-
-[workflows.workflow.metadata]
-outputType = "console"
