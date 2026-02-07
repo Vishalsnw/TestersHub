@@ -15,8 +15,8 @@ import com.testershub.app.models.TestingRequest
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val db = FirebaseFirestore.getInstance()
-    private val auth = FirebaseAuth.getInstance()
+    private val db by lazy { FirebaseFirestore.getInstance() }
+    private val auth by lazy { FirebaseAuth.getInstance() }
     private lateinit var adapter: RequestAdapter
     private val requestList = mutableListOf<TestingRequest>()
 
@@ -58,10 +58,17 @@ class MainActivity : AppCompatActivity() {
             .orderBy("createdAt", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
-                    Toast.makeText(this, "Database Error: ${e.message}", Toast.LENGTH_LONG).show()
+                    // Log error but don't show toast for every snapshot error if it's just a transient offline state
+                    e.printStackTrace()
+                    if (e.code != com.google.firebase.firestore.FirebaseFirestoreException.Code.UNAVAILABLE) {
+                        Toast.makeText(this, "Database Error: ${e.message}", Toast.LENGTH_LONG).show()
+                    }
                     return@addSnapshotListener
                 }
                 if (snapshot != null) {
+                    // Check if data is from cache or server
+                    val source = if (snapshot.metadata.isFromCache) "local cache" else "server"
+                    
                     requestList.clear()
                     for (doc in snapshot.documents) {
                         try {
