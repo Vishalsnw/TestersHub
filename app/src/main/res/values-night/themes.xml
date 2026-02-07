@@ -2,8 +2,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Night values -->
     <style name="Theme.TestersHub" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorSecondary">@color/secondary</item>
         <item name="android:statusBarColor">@color/black</item>
     </style>
 </resources>
