@@ -1,26 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#6750A4</color>
+    <color name="primary">#E65100</color> <!-- Vibrant Orange for Buttons -->
     <color name="onPrimary">#FFFFFF</color>
-    <color name="primaryContainer">#EADDFF</color>
-    <color name="onPrimaryContainer">#21005D</color>
-    <color name="secondary">#625B71</color>
+    <color name="background">#121B2B</color> <!-- Dark Navy Background -->
+    <color name="surface">#1E293B</color> <!-- Lighter Navy for Cards -->
+    <color name="onSurface">#FFFFFF</color>
+    <color name="onSurfaceVariant">#94A3B8</color> <!-- Muted Text -->
+    <color name="secondary">#38BDF8</color> <!-- Blue Accent -->
     <color name="onSecondary">#FFFFFF</color>
-    <color name="secondaryContainer">#E8DEF8</color>
-    <color name="onSecondaryContainer">#1D192B</color>
-    <color name="surface">#FEF7FF</color>
-    <color name="onSurface">#1D1B20</color>
-    <color name="surfaceVariant">#E7E0EB</color>
-    <color name="onSurfaceVariant">#49454F</color>
-    <color name="outline">#79747E</color>
-    <color name="outlineVariant">#CAC4D0</color>
-    
-    <!-- Legacy support -->
-    <color name="purple_200">#D0BCFF</color>
-    <color name="purple_500">#6750A4</color>
-    <color name="purple_700">#4F378B</color>
-    <color name="teal_200">#CCC2DC</color>
-    <color name="teal_700">#332D41</color>
-    <color name="black">#1D1B20</color>
+    <color name="accent_blue">#2563EB</color>
+    <color name="card_bg">#1E293B</color>
+    <color name="text_main">#FFFFFF</color>
+    <color name="text_secondary">#94A3B8</color>
     <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
 </resources>
