@@ -47,11 +47,14 @@ class ProfileActivity : AppCompatActivity() {
         binding.tvName.text = user.name
         binding.tvEmail.text = user.email
         
-        user.profilePhoto?.let {
+        if (!user.profilePhoto.isNullOrEmpty()) {
             Glide.with(this)
-                .load(it)
+                .load(user.profilePhoto)
                 .circleCrop()
+                .placeholder(R.drawable.ic_person)
                 .into(binding.ivProfilePhoto)
+        } else {
+            binding.ivProfilePhoto.setImageResource(R.drawable.ic_person)
         }
     }
 }

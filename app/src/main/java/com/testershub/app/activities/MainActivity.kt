@@ -72,6 +72,7 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                     adapter.notifyDataSetChanged()
+                    binding.tvEmptyState.visibility = if (requestList.isEmpty()) android.view.View.VISIBLE else android.view.View.GONE
                 }
             }
     }
