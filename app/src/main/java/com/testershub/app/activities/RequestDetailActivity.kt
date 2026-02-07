@@ -59,7 +59,7 @@ class RequestDetailActivity : AppCompatActivity() {
     private fun loadSupporters(id: String) {
         db.collection("testingRequests").document(id)
             .collection("supporters")
-            .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
+            .orderBy("joinedAt", com.google.firebase.firestore.Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, _ ->
                 if (snapshot != null) {
                     supporterList.clear()
@@ -130,7 +130,7 @@ class RequestDetailActivity : AppCompatActivity() {
 
             val supporter = hashMapOf(
                 "userId" to userId,
-                "timestamp" to FieldValue.serverTimestamp(),
+                "joinedAt" to FieldValue.serverTimestamp(),
                 "verified" to false
             )
 
@@ -146,6 +146,7 @@ class RequestDetailActivity : AppCompatActivity() {
                 Toast.makeText(this, "You have already joined this testing.", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                android.util.Log.e("RequestDetail", "Join failed", e)
             }
         }
     }

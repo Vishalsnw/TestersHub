@@ -27,7 +27,7 @@ data class TestingRequest(
 
 data class Supporter(
     val userId: String = "",
-    val timestamp: Timestamp? = null,
+    val joinedAt: Timestamp? = null,
     val verified: Boolean = false
 )
 
