@@ -1,7 +1,7 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    match /proofs/{userId}/{allPaths=**} {
+    match /proofs/{requestId}/{userId} {
       // Allow read for authenticated users
       allow read: if request.auth != null;
       
