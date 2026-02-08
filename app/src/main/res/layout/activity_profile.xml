@@ -81,6 +81,7 @@
         app:layout_constraintTop_toBottomOf="@id/tvEmail">
 
         <include layout="@layout/item_profile_option" android:id="@+id/optHelped" />
+        <include layout="@layout/item_profile_option" android:id="@+id/optLeaderboard" />
         <include layout="@layout/item_profile_option" android:id="@+id/optRequests" />
         <include layout="@layout/item_profile_option" android:id="@+id/optMyProfile" />
         <include layout="@layout/item_profile_option" android:id="@+id/optNotifications" />

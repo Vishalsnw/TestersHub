@@ -23,6 +23,12 @@ class ProfileActivity : AppCompatActivity() {
         binding.btnBack.setOnClickListener { finish() }
         binding.optHelped.title.text = "Apps I Helped"
         binding.optHelped.icon.setImageResource(R.drawable.ic_home)
+
+        binding.optLeaderboard.title.text = "Leaderboard"
+        binding.optLeaderboard.icon.setImageResource(R.drawable.ic_leaderboard)
+        binding.optLeaderboard.root.setOnClickListener {
+            startActivity(Intent(this, LeaderboardActivity::class.java))
+        }
         
         binding.optRequests.title.text = "My Testing Requests"
         binding.optRequests.icon.setImageResource(R.drawable.ic_list)
