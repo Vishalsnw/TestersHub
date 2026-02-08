@@ -99,8 +99,11 @@ class RequestDetailActivity : AppCompatActivity() {
     }
 
     private fun updateUI(request: TestingRequest) {
+        val currentUserId = auth.currentUser?.uid
+        val isOwner = request.createdBy == currentUserId
+        
         binding.tvAppName.text = request.appName
-        binding.tvPackageName.text = request.packageName
+        binding.tvPackageName.text = if (isOwner) "${request.packageName} (Owner)" else request.packageName
         binding.tvInstructions.text = request.instructions
         binding.progressBar.max = request.testersRequired
         binding.progressBar.progress = request.joinedCount
@@ -191,6 +194,7 @@ class RequestDetailActivity : AppCompatActivity() {
 
             val supporter = hashMapOf(
                 "userId" to userId,
+                "userName" to (auth.currentUser?.displayName ?: "Anonymous"),
                 "joinedAt" to FieldValue.serverTimestamp(),
                 "verified" to false,
                 "proofUrl" to proofUrl

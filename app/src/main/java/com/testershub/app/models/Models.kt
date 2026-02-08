@@ -27,6 +27,7 @@ data class TestingRequest(
 
 data class Supporter(
     val userId: String = "",
+    val userName: String = "Anonymous",
     val joinedAt: Timestamp? = null,
     val verified: Boolean = false,
     val proofUrl: String? = null

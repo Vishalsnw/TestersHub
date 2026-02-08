@@ -24,7 +24,7 @@ class SupporterAdapter(private val supporters: List<Supporter>) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val supporter = supporters[position]
-        holder.binding.tvUserId.text = "Tester: ${supporter.userId.take(8)}..."
+        holder.binding.tvUserId.text = "Tester: ${supporter.userName}"
         val date = supporter.joinedAt?.toDate()
         if (date != null) {
             val sdf = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
