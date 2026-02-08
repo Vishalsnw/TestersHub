@@ -66,10 +66,22 @@ class RequestDetailActivity : AppCompatActivity() {
                     .update("verified", true)
                     .addOnSuccessListener {
                         Toast.makeText(this, "Tester verified", Toast.LENGTH_SHORT).show()
+                        notifyTesterVerified(supporter.userId)
                     }
             }
             .setNegativeButton("Cancel", null)
             .show()
+    }
+
+    private fun notifyTesterVerified(testerId: String) {
+        val notification = hashMapOf(
+            "message" to "Your testing was verified!",
+            "requestId" to requestId,
+            "timestamp" to FieldValue.serverTimestamp(),
+            "read" to false,
+            "type" to "VERIFY"
+        )
+        db.collection("notifications").document(testerId).collection("items").add(notification)
     }
 
     private fun loadRequestDetails(id: String) {

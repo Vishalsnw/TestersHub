@@ -34,8 +34,26 @@ data class Supporter(
 )
 
 data class Notification(
+    val notificationId: String = "",
     val message: String = "",
     val requestId: String = "",
     val timestamp: Timestamp? = null,
-    val read: Boolean = false
+    val read: Boolean = false,
+    val type: String = "JOIN" // JOIN, VERIFY, CHAT
+)
+
+data class ChatMessage(
+    val messageId: String = "",
+    val senderId: String = "",
+    val text: String = "",
+    val timestamp: Timestamp? = null
+)
+
+data class Rating(
+    val fromUserId: String = "",
+    val toUserId: String = "",
+    val requestId: String = "",
+    val stars: Int = 0,
+    val feedback: String = "",
+    val timestamp: Timestamp? = null
 )
