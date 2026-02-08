@@ -103,6 +103,10 @@ class MainActivity : AppCompatActivity() {
                     startActivity(Intent(this, NotificationsActivity::class.java))
                     true
                 }
+                R.id.nav_leaderboard -> {
+                    startActivity(Intent(this, LeaderboardActivity::class.java))
+                    true
+                }
                 R.id.nav_profile -> {
                     startActivity(Intent(this, ProfileActivity::class.java))
                     true
