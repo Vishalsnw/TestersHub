@@ -104,7 +104,7 @@ class RequestDetailActivity : AppCompatActivity() {
         
         binding.tvAppName.text = request.appName
         binding.tvPackageName.text = if (isOwner) "${request.packageName} (Owner)" else request.packageName
-        binding.tvInstructions.text = request.instructions
+        binding.tvInstructions.text = "How to test:\n1. Open the testing link\n2. Join the program\n3. Download the app\n4. Use for 14 days\n5. Upload screenshot below\n\nNote: ${request.instructions}"
         binding.progressBar.max = request.testersRequired
         binding.progressBar.progress = request.joinedCount
         binding.tvProgressText.text = "${request.joinedCount} / ${request.testersRequired} testers"
