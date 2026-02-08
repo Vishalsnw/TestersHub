@@ -44,6 +44,31 @@ class RequestDetailActivity : AppCompatActivity() {
         supporterAdapter = SupporterAdapter(supporterList)
         binding.rvSupporters.layoutManager = LinearLayoutManager(this)
         binding.rvSupporters.adapter = supporterAdapter
+        
+        // Add click listener for verification (only if owner)
+        supporterAdapter.onItemClick = { supporter ->
+            db.collection("testingRequests").document(requestId!!).get().addOnSuccessListener { snapshot ->
+                if (snapshot.getString("createdBy") == auth.currentUser?.uid) {
+                    showVerificationDialog(supporter)
+                }
+            }
+        }
+    }
+
+    private fun showVerificationDialog(supporter: Supporter) {
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Verify Tester")
+            .setMessage("Mark this tester as verified?")
+            .setPositiveButton("Verify") { _, _ ->
+                db.collection("testingRequests").document(requestId!!)
+                    .collection("supporters").document(supporter.userId)
+                    .update("verified", true)
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Tester verified", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun loadRequestDetails(id: String) {
@@ -112,31 +137,62 @@ class RequestDetailActivity : AppCompatActivity() {
     }
 
     private fun joinTesting() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "image/*"
+        startActivityForResult(intent, 1001)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 1001 && resultCode == RESULT_OK && data != null) {
+            val imageUri = data.data ?: return
+            uploadProofAndJoin(imageUri)
+        } else {
+            binding.btnJoin.isEnabled = true
+        }
+    }
+
+    private fun uploadProofAndJoin(imageUri: Uri) {
         val userId = auth.currentUser?.uid ?: return
         val rId = requestId ?: return
+        
+        Toast.makeText(this, "Uploading proof...", Toast.LENGTH_SHORT).show()
+        
+        val storageRef = com.google.firebase.storage.FirebaseStorage.getInstance().reference
+            .child("proofs/$rId/$userId.jpg")
+            
+        storageRef.putFile(imageUri).addOnSuccessListener {
+            storageRef.downloadUrl.addOnSuccessListener { downloadUri ->
+                completeJoinTransaction(downloadUri.toString())
+            }
+        }.addOnFailureListener {
+            binding.btnJoin.isEnabled = true
+            Toast.makeText(this, "Upload failed: ${it.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
 
-        // Disable button immediately to prevent double clicks
-        binding.btnJoin.isEnabled = false
+    private fun completeJoinTransaction(proofUrl: String) {
+        val userId = auth.currentUser?.uid ?: return
+        val rId = requestId ?: return
 
         db.runTransaction { transaction ->
             val requestRef = db.collection("testingRequests").document(rId)
             val supporterRef = requestRef.collection("supporters").document(userId)
             val userRef = db.collection("users").document(userId)
 
-            // 1. ALL READS FIRST
-            val requestSnapshot = transaction.get(requestRef) // Read parent document
-            val supporterSnapshot = transaction.get(supporterRef) // Check if supporter exists
-            val userSnapshot = transaction.get(userRef) // Check if user document exists
+            val requestSnapshot = transaction.get(requestRef)
+            val supporterSnapshot = transaction.get(supporterRef)
+            val userSnapshot = transaction.get(userRef)
 
             if (supporterSnapshot.exists()) {
                 throw Exception("Already joined")
             }
 
-            // 2. ALL WRITES AFTER ALL READS
             val supporter = hashMapOf(
                 "userId" to userId,
                 "joinedAt" to FieldValue.serverTimestamp(),
-                "verified" to false
+                "verified" to false,
+                "proofUrl" to proofUrl
             )
 
             transaction.set(supporterRef, supporter)
@@ -153,16 +209,11 @@ class RequestDetailActivity : AppCompatActivity() {
                 transaction.set(userRef, newUser)
             }
         }.addOnSuccessListener {
-            Toast.makeText(this, "Joined successfully! Please download and keep the app for 14 days.", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Joined successfully!", Toast.LENGTH_LONG).show()
             createNotification(rId)
         }.addOnFailureListener { e ->
             binding.btnJoin.isEnabled = true
-            if (e.message == "Already joined") {
-                Toast.makeText(this, "You have already joined this testing.", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                android.util.Log.e("RequestDetail", "Join failed", e)
-            }
+            Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -11,6 +11,8 @@ import java.util.*
 class SupporterAdapter(private val supporters: List<Supporter>) :
     RecyclerView.Adapter<SupporterAdapter.ViewHolder>() {
 
+    var onItemClick: ((Supporter) -> Unit)? = null
+
     class ViewHolder(val binding: ItemSupporterBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -25,6 +27,26 @@ class SupporterAdapter(private val supporters: List<Supporter>) :
         if (date != null) {
             val sdf = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
             holder.binding.tvTimestamp.text = sdf.format(date)
+        }
+
+        // Show proof if available
+        if (!supporter.proofUrl.isNullOrEmpty()) {
+            holder.binding.ivProof.visibility = android.view.View.VISIBLE
+            com.bumptech.glide.Glide.with(holder.binding.root.context)
+                .load(supporter.proofUrl)
+                .into(holder.binding.ivProof)
+            
+            holder.binding.ivProof.setOnClickListener {
+                // Open full image
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(supporter.proofUrl))
+                holder.binding.root.context.startActivity(intent)
+            }
+        } else {
+            holder.binding.ivProof.visibility = android.view.View.GONE
+        }
+
+        holder.itemView.setOnClickListener {
+            onItemClick?.invoke(supporter)
         }
     }
 

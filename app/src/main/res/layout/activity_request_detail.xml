@@ -106,7 +106,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
                 android:layout_marginTop="32dp"
-                android:text="Join Testing Group"
+                android:text="Upload Proof &amp; Join"
                 android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
 
             <TextView

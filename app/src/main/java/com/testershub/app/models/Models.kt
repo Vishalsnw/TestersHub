@@ -28,7 +28,8 @@ data class TestingRequest(
 data class Supporter(
     val userId: String = "",
     val joinedAt: Timestamp? = null,
-    val verified: Boolean = false
+    val verified: Boolean = false,
+    val proofUrl: String? = null
 )
 
 data class Notification(

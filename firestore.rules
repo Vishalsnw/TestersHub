@@ -48,8 +48,10 @@ service cloud.firestore {
         // Any authenticated user can read supporters
         allow read: if isSignedIn();
         
-        // Users can only create/update their own supporter document
-        allow write: if isSignedIn() && isOwner(userId);
+        // Users can only create their own supporter document
+        // Owners can update verified status
+        allow create: if isSignedIn() && isOwner(userId);
+        allow update: if isSignedIn() && (isOwner(userId) || isOwner(get(/databases/$(database)/documents/testingRequests/$(requestId)).data.createdBy));
       }
     }
   }
