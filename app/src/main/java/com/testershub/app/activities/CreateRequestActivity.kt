@@ -87,15 +87,40 @@ class CreateRequestActivity : AppCompatActivity() {
         )
 
         val batch = db.batch()
-        batch.set(db.collection("testingRequests").document(requestId), request)
-        batch.update(db.collection("users").document(userId), "requestedCount", FieldValue.increment(1))
-
-        batch.commit().addOnSuccessListener {
-            Toast.makeText(this, "Request created successfully!", Toast.LENGTH_SHORT).show()
-            finish()
+        val requestRef = db.collection("testingRequests").document(requestId)
+        val userRef = db.collection("users").document(userId)
+        
+        batch.set(requestRef, request)
+        
+        userRef.get().addOnSuccessListener { doc ->
+            if (doc.exists()) {
+                batch.update(userRef, "requestedCount", FieldValue.increment(1))
+            } else {
+                val user = hashMapOf(
+                    "userId" to userId,
+                    "name" to (auth.currentUser?.displayName ?: "Anonymous"),
+                    "email" to (auth.currentUser?.email ?: ""),
+                    "profilePhoto" to (auth.currentUser?.photoUrl?.toString() ?: ""),
+                    "helpedCount" to 0,
+                    "requestedCount" to 1
+                )
+                batch.set(userRef, user)
+            }
+            
+            batch.commit().addOnSuccessListener {
+                Toast.makeText(this, "Request created successfully!", Toast.LENGTH_SHORT).show()
+                finish()
+            }.addOnFailureListener { e ->
+                Toast.makeText(this, "Failed to create request: ${e.message}", Toast.LENGTH_LONG).show()
+                binding.btnSubmit.isEnabled = true
+            }
         }.addOnFailureListener { e ->
-            Toast.makeText(this, "Failed to create request: ${e.message}", Toast.LENGTH_LONG).show()
-            binding.btnSubmit.isEnabled = true
+            // Fallback: Just create the request if user doc check fails
+            db.collection("testingRequests").document(requestId).set(request)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Request created!", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
         }
     }
 }
