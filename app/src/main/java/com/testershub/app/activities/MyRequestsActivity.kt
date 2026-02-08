@@ -29,7 +29,9 @@ class MyRequestsActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         adapter = RequestAdapter(requestList) { request ->
-            // Handle click
+            val intent = Intent(this, RequestDetailActivity::class.java)
+            intent.putExtra("REQUEST_ID", request.requestId)
+            startActivity(intent)
         }
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
