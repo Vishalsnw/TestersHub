@@ -39,6 +39,12 @@ class RequestDetailActivity : AppCompatActivity() {
         binding.btnJoin.setOnClickListener {
             joinTesting()
         }
+
+        binding.btnChat.setOnClickListener {
+            val intent = Intent(this, ChatActivity::class.java)
+            intent.putExtra("CHAT_ID", requestId)
+            startActivity(intent)
+        }
     }
 
     private fun setupSupportersRecyclerView() {
@@ -67,10 +73,33 @@ class RequestDetailActivity : AppCompatActivity() {
                     .addOnSuccessListener {
                         Toast.makeText(this, "Tester verified", Toast.LENGTH_SHORT).show()
                         notifyTesterVerified(supporter.userId)
+                        showRatingDialog(supporter.userId)
                     }
             }
             .setNegativeButton("Cancel", null)
             .show()
+    }
+
+    private fun showRatingDialog(toUserId: String) {
+        val dialogView = layoutInflater.inflate(android.R.layout.simple_list_item_1, null) // Placeholder for rating UI
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Rate Tester")
+            .setMessage("How was your experience with this tester?")
+            .setPositiveButton("Good") { _, _ -> submitRating(toUserId, 5, "Great testing!") }
+            .setNegativeButton("Poor") { _, _ -> submitRating(toUserId, 1, "Poor testing.") }
+            .show()
+    }
+
+    private fun submitRating(toUserId: String, stars: Int, feedback: String) {
+        val rating = hashMapOf(
+            "fromUserId" to auth.currentUser?.uid,
+            "toUserId" to toUserId,
+            "requestId" to requestId,
+            "stars" to stars,
+            "feedback" to feedback,
+            "timestamp" to FieldValue.serverTimestamp()
+        )
+        db.collection("ratings").add(rating)
     }
 
     private fun notifyTesterVerified(testerId: String) {
@@ -123,6 +152,8 @@ class RequestDetailActivity : AppCompatActivity() {
 
         if (isOwner) {
             binding.btnJoin.visibility = android.view.View.GONE
+            binding.btnChat.visibility = android.view.View.VISIBLE
+            binding.btnChat.text = "Open Group Chat"
             binding.tvJoinedStatus.visibility = android.view.View.VISIBLE
             binding.tvJoinedStatus.text = "This is your own request"
             binding.tvJoinedStatus.setTextColor(android.graphics.Color.BLUE)
@@ -143,6 +174,7 @@ class RequestDetailActivity : AppCompatActivity() {
                 if (doc != null && doc.exists()) {
                     val isVerified = doc.getBoolean("verified") ?: false
                     binding.btnJoin.visibility = android.view.View.GONE
+                    binding.btnChat.visibility = android.view.View.VISIBLE
                     if (isVerified) {
                         binding.tvJoinedStatus.text = "Verified Tester ✓"
                         binding.tvJoinedStatus.setTextColor(android.graphics.Color.GREEN)

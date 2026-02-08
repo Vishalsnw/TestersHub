@@ -16,6 +16,9 @@ class ChatActivity : AppCompatActivity() {
     private val auth = FirebaseAuth.getInstance()
     private var chatId: String? = null
 
+    private val messageList = mutableListOf<ChatMessage>()
+    private lateinit var adapter: ChatAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityChatBinding.inflate(layoutInflater)
@@ -23,6 +26,10 @@ class ChatActivity : AppCompatActivity() {
 
         chatId = intent.getStringExtra("CHAT_ID")
         
+        adapter = ChatAdapter(messageList)
+        binding.rvChat.layoutManager = LinearLayoutManager(this)
+        binding.rvChat.adapter = adapter
+
         binding.btnSend.setOnClickListener {
             val text = binding.etMessage.text.toString()
             if (text.isNotEmpty()) {
@@ -50,7 +57,15 @@ class ChatActivity : AppCompatActivity() {
             db.collection("chats").document(it).collection("messages")
                 .orderBy("timestamp", Query.Direction.ASCENDING)
                 .addSnapshotListener { snapshot, _ ->
-                    // Adapter logic here
+                    if (snapshot != null) {
+                        messageList.clear()
+                        for (doc in snapshot.documents) {
+                            val msg = doc.toObject(ChatMessage::class.java)
+                            if (msg != null) messageList.add(msg)
+                        }
+                        adapter.notifyDataSetChanged()
+                        binding.rvChat.scrollToPosition(messageList.size - 1)
+                    }
                 }
         }
     }

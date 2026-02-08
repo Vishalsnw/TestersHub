@@ -109,6 +109,15 @@
                 android:text="Upload Proof &amp; Join"
                 android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
 
+            <Button
+                android:id="@+id/btnChat"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginTop="8dp"
+                android:text="Chat with Developer"
+                android:style="@style/Widget.Material3.Button.TonalButton"
+                android:visibility="gone" />
+
             <TextView
                 android:id="@+id/tvJoinedStatus"
                 android:layout_width="match_parent"
