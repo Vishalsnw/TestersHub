@@ -7,6 +7,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.testershub.app.databinding.ActivityChatBinding
 import com.testershub.app.models.ChatMessage
+import com.testershub.app.adapters.ChatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.FieldValue
 
