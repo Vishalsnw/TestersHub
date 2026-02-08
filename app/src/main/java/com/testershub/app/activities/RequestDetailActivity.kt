@@ -109,12 +109,18 @@ class RequestDetailActivity : AppCompatActivity() {
         binding.progressBar.progress = request.joinedCount
         binding.tvProgressText.text = "${request.joinedCount} / ${request.testersRequired} testers"
 
-        binding.tvPackageName.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(request.testingLink))
-            startActivity(intent)
+        if (isOwner) {
+            binding.btnJoin.visibility = android.view.View.GONE
+            binding.tvJoinedStatus.visibility = android.view.View.VISIBLE
+            binding.tvJoinedStatus.text = "This is your own request"
+            binding.tvJoinedStatus.setTextColor(android.graphics.Color.BLUE)
+        } else {
+            binding.tvPackageName.setOnClickListener {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(request.testingLink))
+                startActivity(intent)
+            }
+            checkIfJoined(request.requestId)
         }
-
-        checkIfJoined(request.requestId)
     }
 
     private fun checkIfJoined(id: String) {

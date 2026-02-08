@@ -26,4 +26,4 @@ outputType = "console"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "echo \"TestersHub Android project is ready! Open the root directory in Android Studio to build and run.\" && sleep infinity"
+args = "echo \"TestersHub Android project is ready! This is a native Android project — open it in Android Studio to build and run on a device/emulator.\" && echo \"\" && echo \"Project structure:\" && find app/src -name \"*.kt\" -o -name \"*.xml\" | head -20 && echo \"\" && echo \"To compile (syntax check), run: ./gradlew compileDebugKotlin\" && sleep infinity"
