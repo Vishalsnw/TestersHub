@@ -13,7 +13,7 @@
         android:layout_width="32dp"
         android:layout_height="wrap_content"
         android:text="1"
-        android:textColor="@color/accent"
+        android:textColor="@color/secondary"
         android:textSize="18sp"
         android:textStyle="bold" />
 
